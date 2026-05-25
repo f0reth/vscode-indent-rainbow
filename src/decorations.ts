@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import type { DecorationsOptions, DecorationsResult } from "./types";
+import type { BuildIndentOptions, DecorationsOptions, DecorationsResult } from "./types";
 
 const TAB_RE = /\t/g;
 
@@ -13,12 +13,11 @@ function buildIndentDecorations(
   matchIndex: number,
   matchText: string,
   isTabmix: boolean,
-  tabSize: number,
-  colorCount: number,
-  colorOnWhiteSpaceOnly: boolean,
+  opts: BuildIndentOptions,
   decorators: vscode.DecorationOptions[][],
   tabmixDecorator: vscode.DecorationOptions[],
 ): void {
+  const { tabSize, colorCount, colorOnWhiteSpaceOnly } = opts;
   const matchLength = matchText.length;
   let colorIndex = 0;
   let pos = 0;
@@ -99,9 +98,7 @@ export function computeDecorations(
         match.index,
         matchText,
         isTabmix,
-        tabSize,
-        colorCount,
-        colorOnWhiteSpaceOnly,
+        { tabSize, colorCount, colorOnWhiteSpaceOnly },
         decorators,
         tabmixDecorator,
       );
