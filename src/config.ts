@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 
+import type { Config, IndicatorStyle } from "./types";
+
 export function parseIgnoreLinePatterns(patterns: (string | RegExp)[]): RegExp[] {
   return patterns
     .map((pattern): RegExp | null => {
@@ -22,7 +24,7 @@ export function parseIgnoreLinePatterns(patterns: (string | RegExp)[]): RegExp[]
 
 export function createDecorationTypes(
   colors: string[],
-  indicatorStyle: string,
+  indicatorStyle: IndicatorStyle,
   lightIndicatorStyleLineWidth: number,
 ): vscode.TextEditorDecorationType[] {
   return colors.map((color) => {
@@ -39,13 +41,14 @@ export function createDecorationTypes(
   });
 }
 
-export function loadConfig() {
+export function loadConfig(): Config {
   const cfg = vscode.workspace.getConfiguration("indentRainbow");
 
   const errorColor = cfg.get<string>("errorColor") ?? "rgba(128,32,32,0.3)";
   const tabmixColor = cfg.get<string>("tabmixColor") ?? "";
   const colorOnWhiteSpaceOnly = cfg.get<boolean>("colorOnWhiteSpaceOnly") ?? false;
-  const indicatorStyle = cfg.get<string>("indicatorStyle") ?? "classic";
+  const rawIndicatorStyle = cfg.get<string>("indicatorStyle") ?? "classic";
+  const indicatorStyle: IndicatorStyle = rawIndicatorStyle === "light" ? "light" : "classic";
   const lightIndicatorStyleLineWidth = cfg.get<number>("lightIndicatorStyleLineWidth") ?? 1;
   const colors = cfg.get<string[]>("colors") ?? [
     "rgba(255,255,64,0.07)",
