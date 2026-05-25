@@ -41,13 +41,13 @@ $ARGUMENTS
 4. コミット前に必ず以下を実行し、エラーがないことを確認する（必須）
 
 ```bash
-pnpm run fmt && pnpm run lint
+pnpm run fmt && pnpm run check-types && pnpm run lint
 ```
 
+- `pnpm run fmt` は oxfmt によるフォーマット。変更されたファイルはコミット対象に含める
+- `pnpm run check-types` は `tsc --noEmit` による TypeScript 型チェック
 - `pnpm run lint` は oxlint による型チェック付き静的解析（`oxlint --type-aware --type-check`）
 - エラーが出た場合は修正してから再実行し、必ずクリーンな状態でコミットすること
-- `pnpm run fmt` で変更されたファイルはコミット対象に含める
-- エラーが出た場合は修正して再実行し、エラーが0件になったらコミットしてステップ5へ進む
 - **警告**: エラーが残ったままコミットしてはいけない
 
 5. すべての変更が完了したら、mainブランチにマージしてブランチを削除する
@@ -63,7 +63,7 @@ git branch -d <ブランチ名>
 すべての変更・マージが終わったら、必ず以下を実行してエラーがないことを確認する：
 
 ```bash
-pnpm run fmt && pnpm run lint
+pnpm run fmt && pnpm run check-types && pnpm run lint
 ```
 
 - エラーが出た場合は修正し、mainブランチ上でコミットしてからこのステップを繰り返す
