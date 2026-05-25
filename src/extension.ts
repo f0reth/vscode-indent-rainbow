@@ -47,8 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
     skipAllErrors = false;
     if (skiplang.length !== 0) {
       if (
-        skiplang.indexOf("*") !== -1 ||
-        (currentLanguageId !== null && skiplang.indexOf(currentLanguageId) !== -1)
+        skiplang.includes("*") ||
+        (currentLanguageId !== null && skiplang.includes(currentLanguageId))
       ) {
         skipAllErrors = true;
       }
@@ -65,13 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
         currentLanguageId = activeEditor.document.languageId;
         doIt = true;
         if (inclang.length !== 0) {
-          if (inclang.indexOf(currentLanguageId) === -1) {
+          if (!inclang.includes(currentLanguageId)) {
             doIt = false;
           }
         }
 
         if (doIt && exclang.length !== 0) {
-          if (exclang.indexOf(currentLanguageId) !== -1) {
+          if (exclang.includes(currentLanguageId)) {
             doIt = false;
           }
         }
@@ -127,13 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (timeout) {
       clearTimeout(timeout);
     }
-    const updateDelay =
-      vscode.workspace.getConfiguration("indentRainbow").get<number>("updateDelay") ?? 100;
-    timeout = setTimeout(updateDecorations, updateDelay);
-  }
-
-  if (activeEditor) {
-    indentConfig();
+    timeout = setTimeout(updateDecorations, cfg.updateDelay);
   }
 
   if (activeEditor && checkLanguage()) {
@@ -143,10 +137,6 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.window.onDidChangeActiveTextEditor(
     (editor) => {
       activeEditor = editor;
-      if (editor) {
-        indentConfig();
-      }
-
       if (editor && checkLanguage()) {
         triggerUpdateDecorations();
       }
@@ -157,10 +147,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.workspace.onDidChangeTextDocument(
     (event) => {
-      if (activeEditor) {
-        indentConfig();
-      }
-
       if (activeEditor && event.document === activeEditor.document && checkLanguage()) {
         triggerUpdateDecorations();
       }
