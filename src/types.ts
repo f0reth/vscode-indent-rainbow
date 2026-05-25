@@ -1,5 +1,11 @@
 import type * as vscode from "vscode";
 
+export interface BuildIndentOptions {
+  tabSize: number;
+  colorCount: number;
+  colorOnWhiteSpaceOnly: boolean;
+}
+
 export interface DecorationsOptions {
   tabSize: number;
   colorCount: number;
