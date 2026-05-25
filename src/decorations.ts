@@ -16,7 +16,6 @@ export function computeDecorations(
   } = opts;
   const regEx = /^[\t ]+/gm;
   const text = document.getText();
-  const tabs = " ".repeat(tabSize);
   const ignoreLines = new Set<number>();
   const errorDecorator: vscode.DecorationOptions[] = [];
   const tabmixDecorator: vscode.DecorationOptions[] = [];
@@ -37,14 +36,14 @@ export function computeDecorations(
     });
   }
 
-  const re = new RegExp("\t", "g");
-
   while ((match = regEx.exec(text))) {
     const pos = document.positionAt(match.index);
     const line = document.lineAt(pos).lineNumber;
     const skip = skipAllErrors || ignoreLines.has(line);
     const [thematch] = match;
-    const ma = thematch.replace(re, tabs).length;
+    const tabCount = thematch.split("\t").length - 1;
+    const spaceCount = thematch.length - tabCount;
+    const ma = tabCount * tabSize + spaceCount;
 
     if (!skip && ma % tabSize !== 0) {
       const startPos = document.positionAt(match.index);
@@ -52,6 +51,9 @@ export function computeDecorations(
       errorDecorator.push({ range: new vscode.Range(startPos, endPos) });
     } else {
       const [m] = match;
+      const tc = m.split("\t").length - 1;
+      const sc = tc ? m.split(" ").length - 1 : 0;
+      const isTabmix = !skip && hasTabmix && sc > 0 && tc > 0;
       const l = m.length;
       let o = 0;
       let n = 0;
@@ -69,15 +71,7 @@ export function computeDecorations(
         const decoration: vscode.DecorationOptions = {
           range: new vscode.Range(startPos, endPos),
         };
-        let sc = 0;
-        let tc = 0;
-        if (!skip && hasTabmix) {
-          tc = thematch.split("\t").length - 1;
-          if (tc) {
-            sc = thematch.split(" ").length - 1;
-          }
-        }
-        if (sc > 0 && tc > 0 && hasTabmix) {
+        if (isTabmix) {
           tabmixDecorator.push(decoration);
         } else {
           decorators[o % colorCount].push(decoration);
