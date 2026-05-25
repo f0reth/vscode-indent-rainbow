@@ -2,6 +2,12 @@ import * as vscode from "vscode";
 
 import type { DecorationsOptions, DecorationsResult } from "./types";
 
+const TAB_RE = /\t/g;
+
+function countTabs(s: string): number {
+  return s.length - s.replace(TAB_RE, "").length;
+}
+
 export function computeDecorations(
   document: vscode.TextDocument,
   opts: DecorationsOptions,
@@ -41,7 +47,7 @@ export function computeDecorations(
     const line = document.lineAt(pos).lineNumber;
     const skip = skipAllErrors || ignoreLines.has(line);
     const [thematch] = match;
-    const tabCount = thematch.split("\t").length - 1;
+    const tabCount = countTabs(thematch);
     const spaceCount = thematch.length - tabCount;
     const ma = tabCount * tabSize + spaceCount;
 
