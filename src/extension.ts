@@ -2,6 +2,109 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
+export interface DecorationsOptions {
+  tabSize: number;
+  colorCount: number;
+  skipAllErrors: boolean;
+  ignoreLinePatterns: RegExp[];
+  colorOnWhiteSpaceOnly: boolean;
+  hasTabmix: boolean;
+}
+
+export interface DecorationsResult {
+  decorators: vscode.DecorationOptions[][];
+  errorDecorator: vscode.DecorationOptions[];
+  tabmixDecorator: vscode.DecorationOptions[];
+}
+
+export function computeDecorations(
+  document: vscode.TextDocument,
+  opts: DecorationsOptions,
+): DecorationsResult {
+  const {
+    tabSize,
+    colorCount,
+    skipAllErrors,
+    ignoreLinePatterns,
+    colorOnWhiteSpaceOnly,
+    hasTabmix,
+  } = opts;
+  const regEx = /^[\t ]+/gm;
+  const text = document.getText();
+  const tabs = " ".repeat(tabSize);
+  const ignoreLines: number[] = [];
+  const errorDecorator: vscode.DecorationOptions[] = [];
+  const tabmixDecorator: vscode.DecorationOptions[] = [];
+  const decorators: vscode.DecorationOptions[][] = Array.from({ length: colorCount }, () => []);
+
+  let match: RegExpExecArray | null;
+  let ignore: RegExpExecArray | null;
+
+  if (!skipAllErrors) {
+    ignoreLinePatterns.forEach((ignorePattern) => {
+      if (ignorePattern instanceof RegExp) {
+        while ((ignore = ignorePattern.exec(text))) {
+          const pos = document.positionAt(ignore.index);
+          const line = document.lineAt(pos).lineNumber;
+          ignoreLines.push(line);
+        }
+      }
+    });
+  }
+
+  const re = new RegExp("\t", "g");
+
+  while ((match = regEx.exec(text))) {
+    const pos = document.positionAt(match.index);
+    const line = document.lineAt(pos).lineNumber;
+    const skip = skipAllErrors || ignoreLines.indexOf(line) !== -1;
+    const [thematch] = match;
+    const ma = thematch.replace(re, tabs).length;
+
+    if (!skip && ma % tabSize !== 0) {
+      const startPos = document.positionAt(match.index);
+      const endPos = document.positionAt(match.index + match[0].length);
+      errorDecorator.push({ range: new vscode.Range(startPos, endPos) });
+    } else {
+      const [m] = match;
+      const l = m.length;
+      let o = 0;
+      let n = 0;
+      while (n < l) {
+        const startPos = document.positionAt(match.index + n);
+        if (m[n] === "\t") {
+          n++;
+        } else {
+          n += tabSize;
+        }
+        if (colorOnWhiteSpaceOnly && n > l) {
+          n = l;
+        }
+        const endPos = document.positionAt(match.index + n);
+        const decoration: vscode.DecorationOptions = {
+          range: new vscode.Range(startPos, endPos),
+        };
+        let sc = 0;
+        let tc = 0;
+        if (!skip && hasTabmix) {
+          tc = thematch.split("\t").length - 1;
+          if (tc) {
+            sc = thematch.split(" ").length - 1;
+          }
+        }
+        if (sc > 0 && tc > 0 && hasTabmix) {
+          tabmixDecorator.push(decoration);
+        } else {
+          decorators[o % colorCount].push(decoration);
+        }
+        o++;
+      }
+    }
+  }
+
+  return { decorators, errorDecorator, tabmixDecorator };
+}
+
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
   // Create a decorator types that we use to decorate indent levels
@@ -104,115 +207,27 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
     const editor = activeEditor;
-    const regEx = /^[\t ]+/gm;
-    const text = editor.document.getText();
     const tabSizeRaw = editor.options.tabSize;
     let tabSize = 4;
     if (tabSizeRaw !== undefined && tabSizeRaw !== "auto") {
       tabSize = +tabSizeRaw;
     }
-    const tabs = " ".repeat(tabSize);
-    const ignoreLines: number[] = [];
-    const error_decorator: vscode.DecorationOptions[] = [];
-    const tabmix_decorator: vscode.DecorationOptions[] | null = tabmix_decoration_type ? [] : null;
-    const decorators: vscode.DecorationOptions[][] = [];
-    decorationTypes.forEach(() => {
-      const decorator: vscode.DecorationOptions[] = [];
-      decorators.push(decorator);
+
+    const { decorators, errorDecorator, tabmixDecorator } = computeDecorations(editor.document, {
+      tabSize,
+      colorCount: decorationTypes.length,
+      skipAllErrors,
+      ignoreLinePatterns: ignoreLinePatterns.filter((p): p is RegExp => p instanceof RegExp),
+      colorOnWhiteSpaceOnly,
+      hasTabmix: tabmix_decoration_type !== null,
     });
 
-    let match: RegExpExecArray | null;
-    let ignore: RegExpExecArray | null;
-
-    if (!skipAllErrors) {
-      /**
-       * Checks text against ignore regex patterns from config(or default).
-       * stores the line positions of those lines in the ignoreLines array.
-       */
-      ignoreLinePatterns.forEach((ignorePattern) => {
-        if (ignorePattern instanceof RegExp) {
-          while ((ignore = ignorePattern.exec(text))) {
-            const pos = editor.document.positionAt(ignore.index);
-            const line = editor.document.lineAt(pos).lineNumber;
-            ignoreLines.push(line);
-          }
-        }
-      });
-    }
-
-    const re = new RegExp("\t", "g");
-
-    while ((match = regEx.exec(text))) {
-      const pos = editor.document.positionAt(match.index);
-      const line = editor.document.lineAt(pos).lineNumber;
-      const skip = skipAllErrors || ignoreLines.indexOf(line) !== -1; // true if the lineNumber is in ignoreLines.
-      const [thematch] = match;
-      const ma = thematch.replace(re, tabs).length;
-      /**
-       * Error handling.
-       * When the indent spacing (as spaces) is not divisible by the tabsize,
-       * consider the indent incorrect and mark it with the error decorator.
-       * Checks for lines being ignored in ignoreLines array ( `skip` Boolran)
-       * before considering the line an error.
-       */
-      if (!skip && ma % tabSize !== 0) {
-        const startPos = editor.document.positionAt(match.index);
-        const endPos = editor.document.positionAt(match.index + match[0].length);
-        const decoration: vscode.DecorationOptions = {
-          range: new vscode.Range(startPos, endPos),
-        };
-        error_decorator.push(decoration);
-      } else {
-        const [m] = match;
-        const l = m.length;
-        let o = 0;
-        let n = 0;
-        while (n < l) {
-          const startPos = editor.document.positionAt(match.index + n);
-          if (m[n] === "\t") {
-            n++;
-          } else {
-            n += tabSize;
-          }
-          if (colorOnWhiteSpaceOnly && n > l) {
-            n = l;
-          }
-          const endPos = editor.document.positionAt(match.index + n);
-          const decoration: vscode.DecorationOptions = {
-            range: new vscode.Range(startPos, endPos),
-          };
-          let sc = 0;
-          let tc = 0;
-          if (!skip && tabmix_decorator) {
-            // counting (split is said to be faster than match()
-            // only do it if we don't already skip all errors
-            tc = thematch.split("\t").length - 1;
-            if (tc) {
-              // only do this if we already have some tabs
-              sc = thematch.split(" ").length - 1;
-            }
-            // if we have (only) "spaces" in a "tab" indent file we
-            // just ignore that, because we don't know if there
-            // should really be tabs or spaces for indentation
-            // If you (yes you!) know how to find this out without
-            // infering this from the file, speak up :)
-          }
-          if (sc > 0 && tc > 0 && tabmix_decorator) {
-            tabmix_decorator.push(decoration);
-          } else {
-            const decorator_index = o % decorators.length;
-            decorators[decorator_index].push(decoration);
-          }
-          o++;
-        }
-      }
-    }
     decorationTypes.forEach((decorationType, index) => {
       editor.setDecorations(decorationType, decorators[index]);
     });
-    editor.setDecorations(error_decoration_type, error_decorator);
-    if (tabmix_decoration_type && tabmix_decorator) {
-      editor.setDecorations(tabmix_decoration_type, tabmix_decorator);
+    editor.setDecorations(error_decoration_type, errorDecorator);
+    if (tabmix_decoration_type) {
+      editor.setDecorations(tabmix_decoration_type, tabmixDecorator);
     }
     clearMe = true;
   }
