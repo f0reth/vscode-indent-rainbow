@@ -17,7 +17,7 @@ export function computeDecorations(
   const regEx = /^[\t ]+/gm;
   const text = document.getText();
   const tabs = " ".repeat(tabSize);
-  const ignoreLines: number[] = [];
+  const ignoreLines = new Set<number>();
   const errorDecorator: vscode.DecorationOptions[] = [];
   const tabmixDecorator: vscode.DecorationOptions[] = [];
   const decorators: vscode.DecorationOptions[][] = Array.from({ length: colorCount }, () => []);
@@ -31,7 +31,7 @@ export function computeDecorations(
         while ((ignore = ignorePattern.exec(text))) {
           const pos = document.positionAt(ignore.index);
           const line = document.lineAt(pos).lineNumber;
-          ignoreLines.push(line);
+          ignoreLines.add(line);
         }
       }
     });
@@ -42,7 +42,7 @@ export function computeDecorations(
   while ((match = regEx.exec(text))) {
     const pos = document.positionAt(match.index);
     const line = document.lineAt(pos).lineNumber;
-    const skip = skipAllErrors || ignoreLines.indexOf(line) !== -1;
+    const skip = skipAllErrors || ignoreLines.has(line);
     const [thematch] = match;
     const ma = thematch.replace(re, tabs).length;
 
