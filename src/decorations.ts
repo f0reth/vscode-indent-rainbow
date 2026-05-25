@@ -83,24 +83,21 @@ export function computeDecorations(
     const pos = document.positionAt(match.index);
     const line = document.lineAt(pos).lineNumber;
     const skip = skipAllErrors || ignoreLines.has(line);
-    const [thematch] = match;
-    const tabCount = countTabs(thematch);
-    const spaceCount = thematch.length - tabCount;
-    const ma = tabCount * tabSize + spaceCount;
+    const [matchText] = match;
+    const tabCount = countTabs(matchText);
+    const spaceCount = matchText.length - tabCount;
+    const measuredIndent = tabCount * tabSize + spaceCount;
 
-    if (!skip && ma % tabSize !== 0) {
+    if (!skip && measuredIndent % tabSize !== 0) {
       const startPos = document.positionAt(match.index);
       const endPos = document.positionAt(match.index + match[0].length);
       errorDecorator.push({ range: new vscode.Range(startPos, endPos) });
     } else {
-      const [m] = match;
-      const tc = m.split("\t").length - 1;
-      const sc = tc ? m.split(" ").length - 1 : 0;
-      const isTabmix = !skip && hasTabmix && sc > 0 && tc > 0;
+      const isTabmix = !skip && hasTabmix && tabCount > 0 && spaceCount > 0;
       buildIndentDecorations(
         document,
         match.index,
-        m,
+        matchText,
         isTabmix,
         tabSize,
         colorCount,
