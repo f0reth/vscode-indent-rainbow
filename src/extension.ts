@@ -58,12 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
   function checkLanguage() {
     if (activeEditor) {
       if (currentLanguageId !== activeEditor.document.languageId) {
-        const inclang =
-          vscode.workspace.getConfiguration("indentRainbow").get<string[]>("includedLanguages") ??
-          [];
-        const exclang =
-          vscode.workspace.getConfiguration("indentRainbow").get<string[]>("excludedLanguages") ??
-          [];
+        const indentCfg = vscode.workspace.getConfiguration("indentRainbow");
+        const inclang = indentCfg.get<string[]>("includedLanguages") ?? [];
+        const exclang = indentCfg.get<string[]>("excludedLanguages") ?? [];
 
         currentLanguageId = activeEditor.document.languageId;
         doIt = true;
