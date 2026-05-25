@@ -1,16 +1,23 @@
 import * as vscode from "vscode";
 
 export function parseIgnoreLinePatterns(patterns: (string | RegExp)[]): RegExp[] {
-  return patterns.map((pattern) => {
-    if (pattern instanceof RegExp) {
-      return pattern;
-    }
-    const regParts = pattern.match(/^\/(.*?)\/([gim]*)$/);
-    if (regParts) {
-      return new RegExp(regParts[1], regParts[2]);
-    }
-    return new RegExp(pattern);
-  });
+  return patterns
+    .map((pattern): RegExp | null => {
+      if (pattern instanceof RegExp) {
+        return pattern;
+      }
+      const regParts = pattern.match(/^\/(.*?)\/([gim]*)$/);
+      try {
+        if (regParts) {
+          return new RegExp(regParts[1], regParts[2]);
+        }
+        return new RegExp(pattern);
+      } catch {
+        console.warn(`[indent-rainbow] Invalid ignoreLinePattern: ${pattern}`);
+        return null;
+      }
+    })
+    .filter((x): x is RegExp => x !== null);
 }
 
 export function createDecorationTypes(
@@ -49,6 +56,7 @@ export function loadConfig() {
   const ignoreLinePatterns = parseIgnoreLinePatterns(
     cfg.get<(string | RegExp)[]>("ignoreLinePatterns") ?? [],
   );
+  const updateDelay = cfg.get<number>("updateDelay") ?? 100;
 
   return {
     errorColor,
@@ -58,5 +66,6 @@ export function loadConfig() {
     lightIndicatorStyleLineWidth,
     colors,
     ignoreLinePatterns,
+    updateDelay,
   };
 }
