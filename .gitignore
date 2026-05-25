@@ -26,3 +26,6 @@ Thumbs.db
 # Benchmark output
 bench-results/
 
+# Claude docs (internal planning documents)
+.claude/docs/
+
