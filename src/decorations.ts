@@ -64,18 +64,16 @@ export function computeDecorations(
   const decorators: vscode.DecorationOptions[][] = Array.from({ length: colorCount }, () => []);
 
   let match: RegExpExecArray | null;
-  let ignore: RegExpExecArray | null;
 
   if (!skipAllErrors) {
-    ignoreLinePatterns.forEach((ignorePattern) => {
-      if (ignorePattern instanceof RegExp) {
-        while ((ignore = ignorePattern.exec(text))) {
-          const pos = document.positionAt(ignore.index);
-          const line = document.lineAt(pos).lineNumber;
-          ignoreLines.add(line);
-        }
+    for (const ignorePattern of ignoreLinePatterns) {
+      let ignore: RegExpExecArray | null;
+      while ((ignore = ignorePattern.exec(text))) {
+        const pos = document.positionAt(ignore.index);
+        const line = document.lineAt(pos).lineNumber;
+        ignoreLines.add(line);
       }
-    });
+    }
   }
 
   while ((match = regEx.exec(text))) {
@@ -89,7 +87,7 @@ export function computeDecorations(
 
     if (!skip && measuredIndent % tabSize !== 0) {
       const startPos = document.positionAt(match.index);
-      const endPos = document.positionAt(match.index + match[0].length);
+      const endPos = document.positionAt(match.index + matchText.length);
       errorDecorator.push({ range: new vscode.Range(startPos, endPos) });
     } else {
       const isTabmix = !skip && hasTabmix && tabCount > 0 && spaceCount > 0;
