@@ -57,6 +57,9 @@ export function loadConfig() {
     cfg.get<(string | RegExp)[]>("ignoreLinePatterns") ?? [],
   );
   const updateDelay = cfg.get<number>("updateDelay") ?? 100;
+  const includedLanguages = cfg.get<string[]>("includedLanguages") ?? [];
+  const excludedLanguages = cfg.get<string[]>("excludedLanguages") ?? [];
+  const ignoreErrorLanguages = cfg.get<string[]>("ignoreErrorLanguages") ?? [];
 
   return {
     errorColor,
@@ -67,5 +70,8 @@ export function loadConfig() {
     colors,
     ignoreLinePatterns,
     updateDelay,
+    includedLanguages,
+    excludedLanguages,
+    ignoreErrorLanguages,
   };
 }
