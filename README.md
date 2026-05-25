@@ -1,71 +1,139 @@
-# vscode-indent-rainbow README
+# Indent Rainbow
 
-This is the README for your extension "vscode-indent-rainbow". After writing up a brief description, we recommend including the following sections.
+A VS Code extension that colorizes indentation levels with alternating rainbow colors, making code structure easier to read at a glance.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **Rainbow indentation**: Each indentation level is highlighted with a distinct color
+- **Error detection**: Highlights incorrect indentation (e.g., 3-space indent when tab size is 2)
+- **Tab/space mix detection**: Detects and highlights lines that mix tabs and spaces
+- **Two indicator styles**: Classic (full background) or Light (colored left border)
+- **Per-language control**: Include or exclude specific languages
+- **Fully customizable**: Colors, error colors, update delay, and more
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+| Setting                                      | Default               | Description                                                          |
+| -------------------------------------------- | --------------------- | -------------------------------------------------------------------- |
+| `indentRainbow.colors`                       | 4 RGBA colors         | Array of colors used for indentation levels (cycles through)         |
+| `indentRainbow.errorColor`                   | `rgba(128,32,32,0.6)` | Color for incorrect indentation                                      |
+| `indentRainbow.tabmixColor`                  | `rgba(128,32,96,0.6)` | Color for lines that mix tabs and spaces (empty string to disable)   |
+| `indentRainbow.indicatorStyle`               | `"classic"`           | `"classic"` (full background) or `"light"` (left border only)        |
+| `indentRainbow.lightIndicatorStyleLineWidth` | `1`                   | Border width in pixels when using `light` style                      |
+| `indentRainbow.colorOnWhiteSpaceOnly`        | `false`               | When `true`, only colorize whitespace characters                     |
+| `indentRainbow.includedLanguages`            | `[]`                  | Languages to activate for (empty = all languages)                    |
+| `indentRainbow.excludedLanguages`            | `["plaintext"]`       | Languages to deactivate for                                          |
+| `indentRainbow.ignoreErrorLanguages`         | `["markdown"]`        | Languages to skip error highlighting for (`"*"` to disable globally) |
+| `indentRainbow.ignoreLinePatterns`           | See below             | RegEx patterns to skip error highlighting on matching lines          |
+| `indentRainbow.updateDelay`                  | `100`                 | Delay in milliseconds before updating decorations                    |
 
-For example:
+Default `ignoreLinePatterns`:
 
-This extension contributes the following settings:
+```json
+["/[ \t]* [*]/g", "/[ \t]+[/]{2}/g"]
+```
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+These skip block comment lines (`* ...`) and full-line comments (`// ...`).
+
+### Example configuration
+
+```json
+{
+  "indentRainbow.colors": [
+    "rgba(255,255,64,0.07)",
+    "rgba(127,255,127,0.07)",
+    "rgba(255,127,255,0.07)",
+    "rgba(79,236,236,0.07)"
+  ],
+  "indentRainbow.indicatorStyle": "light",
+  "indentRainbow.excludedLanguages": ["plaintext"],
+  "indentRainbow.ignoreErrorLanguages": ["markdown"]
+}
+```
+
+> **Tip**: When using `light` style, consider disabling VS Code's built-in indent guides with `"editor.guides.indentation": false` to avoid visual overlap.
+
+## Requirements
+
+- VS Code `^1.120.0`
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Configuration changes require a window reload to take effect. A prompt is shown automatically when settings are modified.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release.
 
 ---
 
-## Following extension guidelines
+# Indent Rainbow（日本語）
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+インデントレベルを虹色で色分けするVS Code拡張機能です。コードの構造を一目で把握しやすくなります。
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## 機能
 
-## Working with Markdown
+- **虹色インデント**: 各インデントレベルを異なる色でハイライト表示
+- **エラー検出**: 不正なインデントをハイライト（例：タブサイズが2なのに3スペースでインデントされている場合）
+- **タブ/スペース混在検出**: タブとスペースが混在している行を検出してハイライト
+- **2種類のインジケータースタイル**: クラシック（背景全体を着色）またはライト（左ボーダーのみ着色）
+- **言語別制御**: 特定の言語を対象に含めたり除外したりできる
+- **完全カスタマイズ可能**: 色、エラー色、更新遅延などを設定可能
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+## 設定項目
 
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+| 設定                                         | デフォルト値          | 説明                                                          |
+| -------------------------------------------- | --------------------- | ------------------------------------------------------------- |
+| `indentRainbow.colors`                       | 4種類のRGBA色         | インデントレベルに使用する色の配列（ループして使用）          |
+| `indentRainbow.errorColor`                   | `rgba(128,32,32,0.6)` | 不正なインデントの色                                          |
+| `indentRainbow.tabmixColor`                  | `rgba(128,32,96,0.6)` | タブとスペースが混在している行の色（無効にするには空文字列）  |
+| `indentRainbow.indicatorStyle`               | `"classic"`           | `"classic"`（背景全体）または `"light"`（左ボーダーのみ）     |
+| `indentRainbow.lightIndicatorStyleLineWidth` | `1`                   | `light`スタイル使用時のボーダー幅（ピクセル）                 |
+| `indentRainbow.colorOnWhiteSpaceOnly`        | `false`               | `true`にすると空白文字のみを着色                              |
+| `indentRainbow.includedLanguages`            | `[]`                  | 有効にする言語（空の場合はすべての言語）                      |
+| `indentRainbow.excludedLanguages`            | `["plaintext"]`       | 無効にする言語                                                |
+| `indentRainbow.ignoreErrorLanguages`         | `["markdown"]`        | エラーハイライトをスキップする言語（`"*"`でグローバルに無効） |
+| `indentRainbow.ignoreLinePatterns`           | 下記参照              | エラーハイライトをスキップする行のRegExパターン               |
+| `indentRainbow.updateDelay`                  | `100`                 | デコレーションを更新するまでの遅延時間（ミリ秒）              |
 
-## For more information
+デフォルトの `ignoreLinePatterns`:
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+```json
+["/[ \t]* [*]/g", "/[ \t]+[/]{2}/g"]
+```
 
-**Enjoy!**
+ブロックコメント行（`* ...`）と行コメント（`// ...`）をスキップします。
+
+### 設定例
+
+```json
+{
+  "indentRainbow.colors": [
+    "rgba(255,255,64,0.07)",
+    "rgba(127,255,127,0.07)",
+    "rgba(255,127,255,0.07)",
+    "rgba(79,236,236,0.07)"
+  ],
+  "indentRainbow.indicatorStyle": "light",
+  "indentRainbow.excludedLanguages": ["plaintext"],
+  "indentRainbow.ignoreErrorLanguages": ["markdown"]
+}
+```
+
+> **ヒント**: `light`スタイルを使用する場合、VS Codeの標準インデントガイドと重なるため、`"editor.guides.indentation": false`で標準ガイドを無効にすることをお勧めします。
+
+## 動作要件
+
+- VS Code `^1.120.0`
+
+## 既知の問題
+
+- 設定変更を反映するにはウィンドウのリロードが必要です。設定変更時には自動的にリロードを促すプロンプトが表示されます。
+
+## リリースノート
+
+### 0.0.1
+
+初回リリース。
