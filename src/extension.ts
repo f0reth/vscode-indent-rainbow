@@ -40,41 +40,25 @@ export function activate(context: vscode.ExtensionContext) {
     lightIndicatorStyleLineWidth,
   );
 
-  function indentConfig() {
-    const skiplang =
-      vscode.workspace.getConfiguration("indentRainbow").get<string[]>("ignoreErrorLanguages") ??
-      [];
-    skipAllErrors = false;
-    if (skiplang.length !== 0) {
-      if (
-        skiplang.includes("*") ||
-        (currentLanguageId !== null && skiplang.includes(currentLanguageId))
-      ) {
-        skipAllErrors = true;
-      }
-    }
-  }
-
   function checkLanguage() {
     if (activeEditor) {
       if (currentLanguageId !== activeEditor.document.languageId) {
-        const indentCfg = vscode.workspace.getConfiguration("indentRainbow");
-        const inclang = indentCfg.get<string[]>("includedLanguages") ?? [];
-        const exclang = indentCfg.get<string[]>("excludedLanguages") ?? [];
+        const { includedLanguages, excludedLanguages, ignoreErrorLanguages } = cfg;
 
         currentLanguageId = activeEditor.document.languageId;
         doIt = true;
-        if (inclang.length !== 0) {
-          if (!inclang.includes(currentLanguageId)) {
-            doIt = false;
-          }
+        if (includedLanguages.length !== 0 && !includedLanguages.includes(currentLanguageId)) {
+          doIt = false;
         }
-
-        if (doIt && exclang.length !== 0) {
-          if (exclang.includes(currentLanguageId)) {
-            doIt = false;
-          }
+        if (
+          doIt &&
+          excludedLanguages.length !== 0 &&
+          excludedLanguages.includes(currentLanguageId)
+        ) {
+          doIt = false;
         }
+        skipAllErrors =
+          ignoreErrorLanguages.includes("*") || ignoreErrorLanguages.includes(currentLanguageId);
       }
     }
 
@@ -86,8 +70,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
       clearMe = false;
     }
-
-    indentConfig();
 
     return doIt;
   }
