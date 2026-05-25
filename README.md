@@ -63,9 +63,7 @@ These skip block comment lines (`* ...`) and full-line comments (`// ...`).
 
 ## Release Notes
 
-### 0.0.1
-
-Initial release.
+See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
 
 ---
 
@@ -134,6 +132,4 @@ Initial release.
 
 ## リリースノート
 
-### 0.0.1
-
-初回リリース。
+全リリース履歴は [CHANGELOG.md](./CHANGELOG.md) を参照してください。
