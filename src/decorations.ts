@@ -11,7 +11,7 @@ function countTabs(s: string): number {
 function buildIndentDecorations(
   document: vscode.TextDocument,
   matchIndex: number,
-  m: string,
+  matchText: string,
   isTabmix: boolean,
   tabSize: number,
   colorCount: number,
@@ -19,29 +19,29 @@ function buildIndentDecorations(
   decorators: vscode.DecorationOptions[][],
   tabmixDecorator: vscode.DecorationOptions[],
 ): void {
-  const l = m.length;
-  let o = 0;
-  let n = 0;
-  while (n < l) {
-    const startPos = document.positionAt(matchIndex + n);
-    if (m[n] === "\t") {
-      n++;
+  const matchLength = matchText.length;
+  let colorIndex = 0;
+  let pos = 0;
+  while (pos < matchLength) {
+    const startPos = document.positionAt(matchIndex + pos);
+    if (matchText[pos] === "\t") {
+      pos++;
     } else {
-      n += tabSize;
+      pos += tabSize;
     }
-    if (colorOnWhiteSpaceOnly && n > l) {
-      n = l;
+    if (colorOnWhiteSpaceOnly && pos > matchLength) {
+      pos = matchLength;
     }
-    const endPos = document.positionAt(matchIndex + n);
+    const endPos = document.positionAt(matchIndex + pos);
     const decoration: vscode.DecorationOptions = {
       range: new vscode.Range(startPos, endPos),
     };
     if (isTabmix) {
       tabmixDecorator.push(decoration);
     } else {
-      decorators[o % colorCount].push(decoration);
+      decorators[colorIndex % colorCount].push(decoration);
     }
-    o++;
+    colorIndex++;
   }
 }
 
