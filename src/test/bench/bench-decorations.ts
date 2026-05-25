@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { computeDecorations } from "../../extension";
+import { computeDecorations } from "../../decorations";
 import { BenchResult, measure, printResults } from "./utils";
 
 function makeDocument(lineCount: number): Thenable<vscode.TextDocument> {
