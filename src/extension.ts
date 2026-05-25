@@ -3,7 +3,6 @@ import * as vscode from "vscode";
 import { createDecorationTypes, loadConfig } from "./config";
 import { computeDecorations } from "./decorations";
 
-// this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
   let doIt = false;
   let clearMe = false;
@@ -23,11 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
     ignoreLinePatterns,
   } = cfg;
 
-  const error_decoration_type = vscode.window.createTextEditorDecorationType({
+  const errorDecorationType = vscode.window.createTextEditorDecorationType({
     backgroundColor: errorColor,
   });
 
-  const tabmix_decoration_type =
+  const tabmixDecorationType =
     "" !== tabmixColor
       ? vscode.window.createTextEditorDecorationType({
           backgroundColor: tabmixColor,
@@ -91,15 +90,15 @@ export function activate(context: vscode.ExtensionContext) {
       skipAllErrors,
       ignoreLinePatterns,
       colorOnWhiteSpaceOnly,
-      hasTabmix: tabmix_decoration_type !== null,
+      hasTabmix: tabmixDecorationType !== null,
     });
 
     decorationTypes.forEach((decorationType, index) => {
       editor.setDecorations(decorationType, decorators[index]);
     });
-    editor.setDecorations(error_decoration_type, errorDecorator);
-    if (tabmix_decoration_type) {
-      editor.setDecorations(tabmix_decoration_type, tabmixDecorator);
+    editor.setDecorations(errorDecorationType, errorDecorator);
+    if (tabmixDecorationType) {
+      editor.setDecorations(tabmixDecorationType, tabmixDecorator);
     }
     clearMe = true;
   }
