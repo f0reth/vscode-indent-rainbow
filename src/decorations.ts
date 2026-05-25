@@ -8,6 +8,43 @@ function countTabs(s: string): number {
   return s.length - s.replace(TAB_RE, "").length;
 }
 
+function buildIndentDecorations(
+  document: vscode.TextDocument,
+  matchIndex: number,
+  m: string,
+  isTabmix: boolean,
+  tabSize: number,
+  colorCount: number,
+  colorOnWhiteSpaceOnly: boolean,
+  decorators: vscode.DecorationOptions[][],
+  tabmixDecorator: vscode.DecorationOptions[],
+): void {
+  const l = m.length;
+  let o = 0;
+  let n = 0;
+  while (n < l) {
+    const startPos = document.positionAt(matchIndex + n);
+    if (m[n] === "\t") {
+      n++;
+    } else {
+      n += tabSize;
+    }
+    if (colorOnWhiteSpaceOnly && n > l) {
+      n = l;
+    }
+    const endPos = document.positionAt(matchIndex + n);
+    const decoration: vscode.DecorationOptions = {
+      range: new vscode.Range(startPos, endPos),
+    };
+    if (isTabmix) {
+      tabmixDecorator.push(decoration);
+    } else {
+      decorators[o % colorCount].push(decoration);
+    }
+    o++;
+  }
+}
+
 export function computeDecorations(
   document: vscode.TextDocument,
   opts: DecorationsOptions,
@@ -60,30 +97,17 @@ export function computeDecorations(
       const tc = m.split("\t").length - 1;
       const sc = tc ? m.split(" ").length - 1 : 0;
       const isTabmix = !skip && hasTabmix && sc > 0 && tc > 0;
-      const l = m.length;
-      let o = 0;
-      let n = 0;
-      while (n < l) {
-        const startPos = document.positionAt(match.index + n);
-        if (m[n] === "\t") {
-          n++;
-        } else {
-          n += tabSize;
-        }
-        if (colorOnWhiteSpaceOnly && n > l) {
-          n = l;
-        }
-        const endPos = document.positionAt(match.index + n);
-        const decoration: vscode.DecorationOptions = {
-          range: new vscode.Range(startPos, endPos),
-        };
-        if (isTabmix) {
-          tabmixDecorator.push(decoration);
-        } else {
-          decorators[o % colorCount].push(decoration);
-        }
-        o++;
-      }
+      buildIndentDecorations(
+        document,
+        match.index,
+        m,
+        isTabmix,
+        tabSize,
+        colorCount,
+        colorOnWhiteSpaceOnly,
+        decorators,
+        tabmixDecorator,
+      );
     }
   }
 
