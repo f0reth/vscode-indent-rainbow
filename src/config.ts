@@ -2,6 +2,10 @@ import * as vscode from "vscode";
 
 import type { Config, IndicatorStyle } from "./types";
 
+export const logger = {
+  warn: (msg: string) => console.warn(msg),
+};
+
 export function parseIgnoreLinePatterns(patterns: (string | RegExp)[]): RegExp[] {
   return patterns
     .map((pattern): RegExp | null => {
@@ -15,7 +19,7 @@ export function parseIgnoreLinePatterns(patterns: (string | RegExp)[]): RegExp[]
         }
         return new RegExp(pattern);
       } catch {
-        console.warn(`[indent-rainbow] Invalid ignoreLinePattern: ${pattern}`);
+        logger.warn(`[indent-rainbow] Invalid ignoreLinePattern: ${pattern}`);
         return null;
       }
     })

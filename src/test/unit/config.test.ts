@@ -1,6 +1,6 @@
 import * as assert from "node:assert";
 
-import { parseIgnoreLinePatterns } from "../../config";
+import { logger, parseIgnoreLinePatterns } from "../../config";
 
 suite("parseIgnoreLinePatterns", () => {
   test("empty array returns empty array", () => {
@@ -45,14 +45,14 @@ suite("parseIgnoreLinePatterns", () => {
 
   test("invalid regex pattern is excluded and console.warn called", () => {
     const warnings: string[] = [];
-    const origWarn = console.warn;
-    console.warn = (msg: string) => warnings.push(msg);
+    const origWarn = logger.warn;
+    logger.warn = (msg: string) => warnings.push(msg);
     try {
       const result = parseIgnoreLinePatterns(["[invalid"]);
       assert.strictEqual(result.length, 0);
       assert.ok(warnings.length > 0);
     } finally {
-      console.warn = origWarn;
+      logger.warn = origWarn;
     }
   });
 
