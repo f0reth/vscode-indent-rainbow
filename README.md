@@ -1,4 +1,4 @@
-# Indent Rainbow
+# Colorful Indentation
 
 A VS Code extension that colorizes indentation levels with alternating rainbow colors, making code structure easier to read at a glance.
 
@@ -13,19 +13,19 @@ A VS Code extension that colorizes indentation levels with alternating rainbow c
 
 ## Extension Settings
 
-| Setting                                      | Default               | Description                                                          |
-| -------------------------------------------- | --------------------- | -------------------------------------------------------------------- |
-| `indentRainbow.colors`                       | 4 RGBA colors         | Array of colors used for indentation levels (cycles through)         |
-| `indentRainbow.errorColor`                   | `rgba(128,32,32,0.6)` | Color for incorrect indentation                                      |
-| `indentRainbow.tabmixColor`                  | `rgba(128,32,96,0.6)` | Color for lines that mix tabs and spaces (empty string to disable)   |
-| `indentRainbow.indicatorStyle`               | `"classic"`           | `"classic"` (full background) or `"light"` (left border only)        |
-| `indentRainbow.lightIndicatorStyleLineWidth` | `1`                   | Border width in pixels when using `light` style                      |
-| `indentRainbow.colorOnWhiteSpaceOnly`        | `false`               | When `true`, only colorize whitespace characters                     |
-| `indentRainbow.includedLanguages`            | `[]`                  | Languages to activate for (empty = all languages)                    |
-| `indentRainbow.excludedLanguages`            | `["plaintext"]`       | Languages to deactivate for                                          |
-| `indentRainbow.ignoreErrorLanguages`         | `["markdown"]`        | Languages to skip error highlighting for (`"*"` to disable globally) |
-| `indentRainbow.ignoreLinePatterns`           | See below             | RegEx patterns to skip error highlighting on matching lines          |
-| `indentRainbow.updateDelay`                  | `100`                 | Delay in milliseconds before updating decorations                    |
+| Setting                                            | Default               | Description                                                          |
+| -------------------------------------------------- | --------------------- | -------------------------------------------------------------------- |
+| `colorfulIndentation.colors`                       | 4 RGBA colors         | Array of colors used for indentation levels (cycles through)         |
+| `colorfulIndentation.errorColor`                   | `rgba(128,32,32,0.3)` | Color for incorrect indentation                                      |
+| `colorfulIndentation.tabmixColor`                  | `""`                  | Color for lines that mix tabs and spaces (empty string to disable)   |
+| `colorfulIndentation.indicatorStyle`               | `"classic"`           | `"classic"` (full background) or `"light"` (left border only)        |
+| `colorfulIndentation.lightIndicatorStyleLineWidth` | `1`                   | Border width in pixels when using `light` style                      |
+| `colorfulIndentation.colorOnWhiteSpaceOnly`        | `false`               | When `true`, only colorize whitespace characters                     |
+| `colorfulIndentation.includedLanguages`            | `[]`                  | Languages to activate for (empty = all languages)                    |
+| `colorfulIndentation.excludedLanguages`            | `["plaintext"]`       | Languages to deactivate for                                          |
+| `colorfulIndentation.ignoreErrorLanguages`         | `["markdown"]`        | Languages to skip error highlighting for (`"*"` to disable globally) |
+| `colorfulIndentation.ignoreLinePatterns`           | See below             | RegEx patterns to skip error highlighting on matching lines          |
+| `colorfulIndentation.updateDelay`                  | `100`                 | Delay in milliseconds before updating decorations                    |
 
 Default `ignoreLinePatterns`:
 
@@ -39,15 +39,15 @@ These skip block comment lines (`* ...`) and full-line comments (`// ...`).
 
 ```json
 {
-  "indentRainbow.colors": [
+  "colorfulIndentation.colors": [
     "rgba(255,255,64,0.07)",
     "rgba(127,255,127,0.07)",
     "rgba(255,127,255,0.07)",
     "rgba(79,236,236,0.07)"
   ],
-  "indentRainbow.indicatorStyle": "light",
-  "indentRainbow.excludedLanguages": ["plaintext"],
-  "indentRainbow.ignoreErrorLanguages": ["markdown"]
+  "colorfulIndentation.indicatorStyle": "light",
+  "colorfulIndentation.excludedLanguages": ["plaintext"],
+  "colorfulIndentation.ignoreErrorLanguages": ["markdown"]
 }
 ```
 
@@ -67,7 +67,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
 
 ---
 
-# Indent Rainbow（日本語）
+# Colorful Indentation（日本語）
 
 インデントレベルを虹色で色分けするVS Code拡張機能です。コードの構造を一目で把握しやすくなります。
 
@@ -82,19 +82,19 @@ See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
 
 ## 設定項目
 
-| 設定                                         | デフォルト値          | 説明                                                          |
-| -------------------------------------------- | --------------------- | ------------------------------------------------------------- |
-| `indentRainbow.colors`                       | 4種類のRGBA色         | インデントレベルに使用する色の配列（ループして使用）          |
-| `indentRainbow.errorColor`                   | `rgba(128,32,32,0.6)` | 不正なインデントの色                                          |
-| `indentRainbow.tabmixColor`                  | `rgba(128,32,96,0.6)` | タブとスペースが混在している行の色（無効にするには空文字列）  |
-| `indentRainbow.indicatorStyle`               | `"classic"`           | `"classic"`（背景全体）または `"light"`（左ボーダーのみ）     |
-| `indentRainbow.lightIndicatorStyleLineWidth` | `1`                   | `light`スタイル使用時のボーダー幅（ピクセル）                 |
-| `indentRainbow.colorOnWhiteSpaceOnly`        | `false`               | `true`にすると空白文字のみを着色                              |
-| `indentRainbow.includedLanguages`            | `[]`                  | 有効にする言語（空の場合はすべての言語）                      |
-| `indentRainbow.excludedLanguages`            | `["plaintext"]`       | 無効にする言語                                                |
-| `indentRainbow.ignoreErrorLanguages`         | `["markdown"]`        | エラーハイライトをスキップする言語（`"*"`でグローバルに無効） |
-| `indentRainbow.ignoreLinePatterns`           | 下記参照              | エラーハイライトをスキップする行のRegExパターン               |
-| `indentRainbow.updateDelay`                  | `100`                 | デコレーションを更新するまでの遅延時間（ミリ秒）              |
+| 設定                                               | デフォルト値          | 説明                                                          |
+| -------------------------------------------------- | --------------------- | ------------------------------------------------------------- |
+| `colorfulIndentation.colors`                       | 4種類のRGBA色         | インデントレベルに使用する色の配列（ループして使用）          |
+| `colorfulIndentation.errorColor`                   | `rgba(128,32,32,0.3)` | 不正なインデントの色                                          |
+| `colorfulIndentation.tabmixColor`                  | `""`                  | タブとスペースが混在している行の色（無効にするには空文字列）  |
+| `colorfulIndentation.indicatorStyle`               | `"classic"`           | `"classic"`（背景全体）または `"light"`（左ボーダーのみ）     |
+| `colorfulIndentation.lightIndicatorStyleLineWidth` | `1`                   | `light`スタイル使用時のボーダー幅（ピクセル）                 |
+| `colorfulIndentation.colorOnWhiteSpaceOnly`        | `false`               | `true`にすると空白文字のみを着色                              |
+| `colorfulIndentation.includedLanguages`            | `[]`                  | 有効にする言語（空の場合はすべての言語）                      |
+| `colorfulIndentation.excludedLanguages`            | `["plaintext"]`       | 無効にする言語                                                |
+| `colorfulIndentation.ignoreErrorLanguages`         | `["markdown"]`        | エラーハイライトをスキップする言語（`"*"`でグローバルに無効） |
+| `colorfulIndentation.ignoreLinePatterns`           | 下記参照              | エラーハイライトをスキップする行のRegExパターン               |
+| `colorfulIndentation.updateDelay`                  | `100`                 | デコレーションを更新するまでの遅延時間（ミリ秒）              |
 
 デフォルトの `ignoreLinePatterns`:
 
@@ -108,15 +108,15 @@ See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
 
 ```json
 {
-  "indentRainbow.colors": [
+  "colorfulIndentation.colors": [
     "rgba(255,255,64,0.07)",
     "rgba(127,255,127,0.07)",
     "rgba(255,127,255,0.07)",
     "rgba(79,236,236,0.07)"
   ],
-  "indentRainbow.indicatorStyle": "light",
-  "indentRainbow.excludedLanguages": ["plaintext"],
-  "indentRainbow.ignoreErrorLanguages": ["markdown"]
+  "colorfulIndentation.indicatorStyle": "light",
+  "colorfulIndentation.excludedLanguages": ["plaintext"],
+  "colorfulIndentation.ignoreErrorLanguages": ["markdown"]
 }
 ```
 
