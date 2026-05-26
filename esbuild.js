@@ -2,7 +2,8 @@ const esbuild = require("esbuild");
 
 const production = process.argv.includes("--production");
 const bench = process.argv.includes("--bench");
-const watch = bench ? false : process.argv.includes("--watch");
+const test = process.argv.includes("--test");
+const watch = bench || test ? false : process.argv.includes("--watch");
 
 /**
  * @type {import('esbuild').Plugin}
@@ -62,6 +63,23 @@ async function main() {
     });
     await benchCtx.rebuild();
     await benchCtx.dispose();
+  }
+
+  if (test) {
+    const testCtx = await esbuild.context({
+      entryPoints: ["src/test/unit/**/*.test.ts", "src/test/integration/**/*.test.ts"],
+      bundle: true,
+      format: "cjs",
+      platform: "node",
+      outdir: "dist/test",
+      outbase: "src/test",
+      external: ["vscode"],
+      sourcemap: true,
+      logLevel: "silent",
+      plugins: [esbuildProblemMatcherPlugin],
+    });
+    await testCtx.rebuild();
+    await testCtx.dispose();
   }
 }
 
