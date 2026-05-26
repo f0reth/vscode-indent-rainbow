@@ -2,12 +2,7 @@ import * as vscode from "vscode";
 
 export function makeDoc(content: string): vscode.TextDocument {
   const lines = content.split("\n");
-  const lineStarts: number[] = [];
-  let off = 0;
-  for (const l of lines) {
-    lineStarts.push(off);
-    off += l.length + 1;
-  }
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return {
     getText: () => content,
     positionAt: (offset: number) => {
