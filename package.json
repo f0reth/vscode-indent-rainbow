@@ -1,5 +1,5 @@
 {
-  "name": "vscode-indent-rainbow",
+  "name": "vscode-colorful-indentation",
   "displayName": "Colorful Indentation",
   "version": "0.0.1",
   "description": "",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/f0reth/vscode-indent-rainbow"
+    "url": "https://github.com/f0reth/vscode-colorful-indentation"
   },
   "publisher": "f0reth",
   "main": "./dist/extension.js",
