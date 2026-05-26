@@ -12,10 +12,8 @@ function buildIndentDecorations(
   document: vscode.TextDocument,
   matchIndex: number,
   matchText: string,
-  isTabmix: boolean,
   opts: BuildIndentOptions,
   decorators: vscode.DecorationOptions[][],
-  tabmixDecorator: vscode.DecorationOptions[],
 ): void {
   const { tabSize, colorCount, colorOnWhiteSpaceOnly } = opts;
   const matchLength = matchText.length;
@@ -30,14 +28,7 @@ function buildIndentDecorations(
     }
     const endCharacter = colorOnWhiteSpaceOnly ? Math.min(pos, matchLength) : pos;
     const endPos = new vscode.Position(startPos.line, endCharacter);
-    const decoration: vscode.DecorationOptions = {
-      range: new vscode.Range(startPos, endPos),
-    };
-    if (isTabmix) {
-      tabmixDecorator.push(decoration);
-    } else {
-      decorators[colorIndex % colorCount].push(decoration);
-    }
+    decorators[colorIndex % colorCount].push({ range: new vscode.Range(startPos, endPos) });
     colorIndex++;
   }
 }
@@ -85,15 +76,9 @@ export function computeDecorations(
 
     const isTabmix = !skip && hasTabmix && tabCount > 0 && spaceCount > 0;
     if (isTabmix) {
-      buildIndentDecorations(
-        document,
-        match.index,
-        matchText,
-        true,
-        { tabSize, colorCount, colorOnWhiteSpaceOnly },
-        decorators,
-        tabmixDecorator,
-      );
+      const startPos = document.positionAt(match.index);
+      const endPos = document.positionAt(match.index + matchText.length);
+      tabmixDecorator.push({ range: new vscode.Range(startPos, endPos) });
     } else if (!skip && measuredIndent % tabSize !== 0) {
       const startPos = document.positionAt(match.index);
       const endPos = document.positionAt(match.index + matchText.length);
@@ -103,10 +88,8 @@ export function computeDecorations(
         document,
         match.index,
         matchText,
-        false,
         { tabSize, colorCount, colorOnWhiteSpaceOnly },
         decorators,
-        tabmixDecorator,
       );
     }
   }
