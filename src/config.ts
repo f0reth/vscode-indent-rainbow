@@ -42,7 +42,7 @@ export function createDecorationTypes(
 }
 
 export function loadConfig(): Config {
-  const cfg = vscode.workspace.getConfiguration("indentRainbow");
+  const cfg = vscode.workspace.getConfiguration("colorfulIndentation");
 
   const errorColor = cfg.get<string>("errorColor") ?? "rgba(128,32,32,0.3)";
   const tabmixColor = cfg.get<string>("tabmixColor") ?? "";

@@ -137,12 +137,12 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   /**
-   * Listen for configuration change in indentRainbow section
+   * Listen for configuration change in colorfulIndentation section
    * When anything changes in the section, show a prompt to reload
    * VSCode window
    */
   vscode.workspace.onDidChangeConfiguration((configChangeEvent) => {
-    if (configChangeEvent.affectsConfiguration("indentRainbow")) {
+    if (configChangeEvent.affectsConfiguration("colorfulIndentation")) {
       const actions = ["Reload now", "Later"];
 
       vscode.window
